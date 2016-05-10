@@ -86,7 +86,7 @@ A <-ggplot(data=POPEXT, aes(x=YEAR, y=POPEXT, fill=GRUP)) +
               panel.grid.major=element_line(colour="#BDBDBD"), 
               panel.grid.minor=element_line(colour="white"),
               plot.background = element_rect(fill = "#FFFFFF"))+ ylab("Población nacida en el extranjero\n")
-A
+plot(A)
 setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 #ggsave("CAP1_FIG1_POBLACION_EXTRANJERA_POR_COMUNIDAD_2000_2014.tiff", scale = 3, width = 16.5, height = 8.8, units = c("cm"), dpi = 300)
 ```
