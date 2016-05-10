@@ -90,7 +90,7 @@ A
 setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 #ggsave("CAP1_FIG1_POBLACION_EXTRANJERA_POR_COMUNIDAD_2000_2014.tiff", scale = 3, width = 16.5, height = 8.8, units = c("cm"), dpi = 300)
 ```
-
+![alt text](C:/Users/jgaleano/Desktop/ICARIA/GRAFICOS/CAP1_FIG1_HORIZONTAL_8.8X16.5.tiff)
 <br>
 
 #### **Figura 1.2: Índice de disimilitud 2000-2007-2014, municipios de más de 25.000 habitantes agrupados por comunidades autónomas**           
