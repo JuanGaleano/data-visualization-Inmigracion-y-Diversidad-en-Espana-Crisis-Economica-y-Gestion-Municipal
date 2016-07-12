@@ -1,7 +1,7 @@
 ---
 title: "INMIGRACIÓN Y DIVERSIDAD EN ESPAÑA CRISIS ECONÓMICA Y GESTIÓN MUNICIPAL"
-author: ""
-date: ""
+author: ''
+date: ''
 output: html_document
 ---
 
@@ -12,6 +12,11 @@ output: html_document
 #### **Data visualization:** [***Juan Galeano***](http://ced.uab.es/directori/juan-galeano/)    
 
 ***
+
+Este documento contiene el código R utilizado para la confección de cada uno de los gráficos que se presentan en los distintos capítulos del libro. El unico cambio que se ha realizado a la hora de elaborar este documento han sido unos ligeros ajustes sobre el tamaño de las fuentes.
+
+En el caso de los figuras que contienen mapas gran parte del análisis estadístico también fue realizado con R. Sin embargo, a la hora de visualizar esos resultados sobre el territorio se ha utilizado el programa QGIS. Aqui sólo aparece el mapa final, no el código de análsisi del cual emanan los resultados.  
+
 
 ### **<span style="color:red">Capítulo 1: IMIGRACIÓN INTERNACIONAL Y CAMBIO DEMOGRÁFICO EN EL NUEVO MILENIO [Autores: Juan Galeano & Albert Sabater]</span>**  
 
@@ -142,7 +147,7 @@ A <-p + annotate("segment", x = 2000, xend =2014, y = 50, yend = 50,
               axis.text.x  = element_text(angle = 90,vjust=0.5, size=15,colour="black"),
               axis.title.y = element_text(colour="black", size=15),
               axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
-              strip.text=element_text(angle = 0,vjust=0.5, size=11,colour="black", face = "bold"),
+              strip.text=element_text(angle = 0,vjust=0.5, size=10.5,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
               panel.grid.major=element_line(colour="#BDBDBD"), 
@@ -1410,45 +1415,78 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 ```{r fig.width=16.5, fig.height=8.8}
 CAP6_GRAFIC1 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC1.csv", stringsAsFactors=FALSE)
 
-CAP6_GRAFIC1$HOGAR2 <- rep(c("Unipersonales", "Pareja sin hijos\n(sin otras personas)","Pareja con hijos\n(sin otras personas)",
-                          "Monoparentales\n(sin otras personas)", "Pareja sin hijos\n(con otras personas)", 
-                          "Pareja con hijos\n(con otras personas)","Monoparentales\n(con otras personas)",
-                          "2 o + nucleos\nde pareja o filiación", "Sin lazos\npareja o filiación"),4)
+CAP6_GRAFIC1$HOGAR2 <- rep(c("Unipersonales", 
+                             "Pareja sin hijos\n(sin otras personas)",
+                             "Pareja con hijos\n(sin otras personas)",
+                             "Monoparentales\n(sin otras personas)", 
+                             "Pareja sin hijos\n(con otras personas)", 
+                             "Pareja con hijos\n(con otras personas)",
+                             "Monoparentales\n(con otras personas)",
+                             "Dos o + núcleos\nde pareja o filiación", 
+                             "Sin lazos\npareja o filiación"),4)
 
+CAP6_GRAFIC1$HOGAR2<-as.factor(CAP6_GRAFIC1$HOGAR2)
 
 CAP6_GRAFIC1$HOGAR2 <- factor(CAP6_GRAFIC1$HOGAR2,
-                   levels = c("Pareja con hijos\n(sin otras personas)","Pareja sin hijos\n(sin otras personas)",
-                              "Unipersonales","Monoparentales\n(sin otras personas)","Sin lazos\npareja o filiación",
-                              "Pareja con hijos\n(con otras personas)","2 o + nucleos\nde pareja o filiación",
-                              "Monoparentales\n(con otras personas)","Pareja sin hijos\n(con otras personas)"))
+                       levels = c("Unipersonales", 
+                             "Pareja sin hijos\n(sin otras personas)",
+                             "Pareja con hijos\n(sin otras personas)",
+                             "Monoparentales\n(sin otras personas)", 
+                             "Pareja sin hijos\n(con otras personas)", 
+                             "Pareja con hijos\n(con otras personas)",
+                             "Monoparentales\n(con otras personas)",
+                             "Dos o + núcleos\nde pareja o filiación", 
+                             "Sin lazos\npareja o filiación"))
 
+levels(CAP6_GRAFIC1$HOGAR2)
 
 CAP6_GRAFIC1$TIPO <- factor(CAP6_GRAFIC1$TIPO,
                    levels = c("Población","Hogares"))
+CAP6_GRAFIC1$POP <- factor(CAP6_GRAFIC1$POP,
+                   levels = c("Nativos","Inmigrantes"))
 
-A<-ggplot(data=CAP6_GRAFIC1, aes(x=POP, y=PROP, fill=POP, label=round(PROP*100, digits =2))) + 
+
+A<-ggplot(data=CAP6_GRAFIC1, aes(x=POP, y=PROP, fill=HOGAR2, label=round(PROP*100, digits =2))) + 
   geom_bar(stat="identity",colour="black")+
-  coord_flip()+
-  geom_text(hjust=-0.15, size=5)+
-  scale_y_continuous(breaks=c(0,0.5,1),labels=percent)+
+  #coord_flip()+
+  #geom_text(hjust=-0.15, size=5)+
+  scale_y_continuous(breaks=c(0,.2,.4,.6,.8,1),labels=percent)+
   expand_limits(y=c(0,1))+
-  facet_grid(TIPO~  HOGAR2)+
+  facet_grid(~TIPO)+
     scale_fill_manual(name="",
-                     values=c( "#A4A4A4","#F2F2F2"), #"#D8D8D8","#6E6E6E", "#424242", "#1C1C1C"),
-                     breaks=c("Nativos","Inmigrantes"),
-                     labels=c("Nativos","Inmigrantes"))+
+                     guide = guide_legend(reverse=TRUE),
+                      values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"),
+                     breaks=c("Unipersonales", 
+                             "Pareja sin hijos\n(sin otras personas)",
+                             "Pareja con hijos\n(sin otras personas)",
+                             "Monoparentales\n(sin otras personas)", 
+                             "Pareja sin hijos\n(con otras personas)", 
+                             "Pareja con hijos\n(con otras personas)",
+                             "Monoparentales\n(con otras personas)",
+                             "Dos o + núcleos\nde pareja o filiación", 
+                             "Sin lazos\npareja o filiación"),
+                     labels=c("Unipersonales", 
+                             "Pareja sin hijos\n(sin otras personas)",
+                             "Pareja con hijos\n(sin otras personas)",
+                             "Monoparentales\n(sin otras personas)", 
+                             "Pareja sin hijos\n(con otras personas)", 
+                             "Pareja con hijos\n(con otras personas)",
+                             "Monoparentales\n(con otras personas)",
+                             "Dos o + núcleos\nde pareja o filiación", 
+                             "Sin lazos\npareja o filiación"))+
       theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
               legend.text = element_text(colour="black", size = 15),
-              legend.position="none",
+              legend.position="right",
               legend.background = element_rect(fill="#FFFFFF"),
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 90,vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 00,vjust=0.5, size=18,colour="black"),
               axis.title.y = element_text(colour="black", size=15),
               axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
-              strip.text=element_text(angle = 0,vjust=0.5, size=12,colour="black", face = "bold"),
+              strip.text=element_text(angle = 0,vjust=0.5, size=18,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
               panel.grid.major=element_line(colour="#BDBDBD"), 
@@ -1458,7 +1496,7 @@ A<-ggplot(data=CAP6_GRAFIC1, aes(x=POP, y=PROP, fill=POP, label=round(PROP*100, 
 A
 
 setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
-#ggsave("CAP6_FIG1_HOGARES_2011.tiff", scale = 3, width = 16.5, height = 8.8, units = c("cm"), dpi = 300)
+ggsave("CAP6_FIG1_HOGARES_2011.tiff", scale = 3, width = 16.5, height = 8.8, units = c("cm"), dpi = 300)
 ```
 
 <br>
@@ -1577,6 +1615,19 @@ CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
 
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
+
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   geom_bar(data = CAP6_GRAFIC4[(CAP6_GRAFIC4$SEX2=="Pareja con hijos Mujeres"|
@@ -1604,7 +1655,27 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
   annotate("text", x = 17.5, y = -9.5, label = "Marruecos",size=5)+
   
@@ -1616,9 +1687,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=13,colour="black"),
-              axis.title.y = element_text(colour="black", size=13),
-              axis.text.y  = element_text(vjust=0.5, size=13,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -1636,13 +1707,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (Rumania)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_RUMANIA.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -1671,11 +1756,31 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Rumania",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Rumania",size=5)+
   
- theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
+  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
               legend.text = element_text(colour="black", size = 12),
               legend.position="none",
@@ -1683,9 +1788,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -1696,20 +1801,34 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
 
 A
 setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
-#ggsave("CAP6_FIG4_PIRAMIDE_RUMANIA.tiff", scale = 3, width = 6.3, height = 4.7, units = c("cm"), dpi = 300)
+ggsave("CAP6_FIG4_PIRAMIDE_RUMANIA.tiff", scale = 3,width = 5.5, height = 4.1, units = c("cm"), dpi = 300)
 ```
 
 <br>
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (ECUADOR)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_ECUADOR.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -1738,9 +1857,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Ecuador",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Ecuador",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -1750,9 +1889,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -1770,13 +1909,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (FRANCIA)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_FRANCIA.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -1805,9 +1958,28 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
-  
-  annotate("text", x = 17.5, y = -9.5, label = "Francia",size=7)+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
+  annotate("text", x = 17.5, y = -9.5, label = "Francia",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -1817,9 +1989,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -1837,13 +2009,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (PERU)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_PERU.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -1872,9 +2058,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Perú",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Perú",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -1884,9 +2090,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -1904,13 +2110,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (REINO UNIDO)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_UK.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -1939,9 +2159,28 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
-  
-  annotate("text", x = 17.5, y = -9.5, label = "Reino Unido",size=7)+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
+  annotate("text", x = 17.5, y = -9.5, label = "Reino Unido",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -1951,9 +2190,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -1971,13 +2210,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (ARGENTINA)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_ARGENTINA.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -2006,9 +2259,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Argentina",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Argentina",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -2018,9 +2291,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2038,13 +2311,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (BOLIVIA)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_BOLIVIA.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -2073,9 +2360,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Bolivia",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Bolivia",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -2085,9 +2392,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2105,13 +2412,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (FILIPINAS)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_FILIPINAS.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -2140,9 +2461,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Filipinas",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Filipinas",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -2152,9 +2493,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2172,13 +2513,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (CHINA)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_CHINA.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -2207,9 +2562,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "China",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "China",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -2219,9 +2594,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2239,13 +2614,27 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (RUSIA)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=5.5, fig.height=4.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_RUSIA.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -2274,9 +2663,29 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Rusia",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Rusia",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
@@ -2286,9 +2695,9 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2306,13 +2715,28 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 6.4: Pirámides por origen del hogar y estructura familiar, 2011 (SENEGAL)** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=10.5, fig.height=5.5}
 library(ggplot2)
 CAP6_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC4_SENEGAL.csv", stringsAsFactors=FALSE)
 
 CAP6_GRAFIC4$EDAD <- factor(CAP6_GRAFIC4$EDAD,
                    levels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49",
                               "50-54","55-59","60-64","65-69","70-74","75-79","80-84","85-89"))
+
+
+CAP6_GRAFIC4 [151,2] <- -6.4
+CAP6_GRAFIC4$HOGARES <- as.factor(CAP6_GRAFIC4$HOGARES)
+
+CAP6_GRAFIC4$HOGARES <- factor(CAP6_GRAFIC4$HOGARES,
+                       levels = c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                  "Pareja con hijos y otros",
+                                  "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                  "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))
 
 
 A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
@@ -2341,22 +2765,42 @@ A<-ggplot(CAP6_GRAFIC4, aes(x=factor(EDAD), y=PROP, fill=HOGARES))+
   coord_flip()+
 scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4, 6, 8, 10, 12), 
                      labels = paste0(as.character(c(seq(12, 0, -2), seq(2, 12, 2))), "%")) + 
-   scale_fill_grey()+
+   scale_fill_manual(
+                     values=c("#013ADF", "#2E64FE", "#5882FA", "#819FF7", 
+                              "#B40404", "#FF0000", "#FA5858", "#F78181", "#F5A9A9"), 
+                     breaks=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"), 
+                     labels=c("Unipersonales",
+                                  "Pareja con hijos",
+                                  "Pareja sin hijos",  
+                                  "Monoparentales", 
+                                 "Pareja con hijos y otros",
+                                 "Pareja sin hijos y otros",
+                                  "Monoparentales y otros", 
+                                 "Dos o más nucleos de pareja o filiación",
+                                  "Personas no vinculadas por pareja o filiación"))+
   
-  annotate("text", x = 17.5, y = -9.5, label = "Senegal",size=7)+
+  annotate("text", x = 17.5, y = -9.5, label = "Senegal",size=5)+
   
  theme(plot.title = element_text(lineheight=5.6, size=10, face="bold"),
               legend.title = element_blank(),
               legend.text = element_text(colour="black", size = 12),
-              legend.position = "bottom",
+              legend.position = "none",
               legend.background = element_rect(fill="#FFFFFF"),
               #legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2364,18 +2808,16 @@ scale_y_continuous(limits=c(-12,12),breaks = c(-12, -10, -8, -6, -4, -2,0, 2, 4,
               panel.grid.minor=element_line(colour="white"),
               plot.background = element_rect(fill = "#FFFFFF"))+
   xlab("Edad\n")
-
-
 A
 setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
-#ggsave("CAP6_FIG4_PIRAMIDES_LEYENDA.tiff", scale = 3, width = 13.5, height = 12.1, units = c("cm"), dpi = 300)
+ggsave("CAP6_FIG4_PIRAMIDES_SENEGAL.tiff", scale = 3, width = 5.5, height = 4.1, units = c("cm"), dpi = 300)
 ```
 
 <br>
 
 #### **Figura 6.5: Indicador resumen de la vulnerabilidad del hogar (% hogares vulnerables) por origen**
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP6_GRAFIC5 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_6_GRAFIC5.csv", stringsAsFactors=FALSE)
@@ -2400,9 +2842,9 @@ A<- ggplot(CAP6_GRAFIC5, aes(x = PAIS, y = PROP, fill=PAIS)) + geom_bar(stat = "
               legend.key.size = unit(2.5, "lines"),
               
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 00,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 00,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2423,7 +2865,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 7.2: Evolución de los espacios de concentración de la población marroquí en España, 2000-2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP7_GRAFIC2 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_7_GRAFIC2.csv", stringsAsFactors=FALSE)
@@ -2450,7 +2892,7 @@ A<- ggplot(CAP7_GRAFIC2, aes(x = CAT, y = PROP, fill=factor(YEAR))) + geom_bar(s
                      labels=c("2000","2005","2010","2014"))+
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
-              legend.text = element_text(colour="black", size = 20),
+              legend.text = element_text(colour="black", size = 15),
                  legend.position = c(.80, .91),
               legend.background = element_rect(fill=NA),
               #legend.justification=c(6,2),
@@ -2459,9 +2901,9 @@ A<- ggplot(CAP7_GRAFIC2, aes(x = CAT, y = PROP, fill=factor(YEAR))) + geom_bar(s
               legend.key.size = unit(1.5, "lines"),
               
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 90,vjust=0.5, size=20,colour="black"),
-              axis.title.y = element_text(colour="black", size=20),
-              axis.text.y  = element_text(vjust=0.5, size=20,colour="black"),
+              axis.text.x  = element_text(angle = 90,vjust=0.5, size=15,colour="black"),
+              axis.title.y = element_text(colour="black", size=15),
+              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2478,7 +2920,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 7.3: Composición por nacionalidad de los espacios de concentración de población marroquí, 2000-2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP7_GRAFIC3 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_7_GRAFIC3.csv", stringsAsFactors=FALSE)
@@ -2495,7 +2937,7 @@ A<- ggplot(CAP7_GRAFIC3, aes(x = CAT, y = POP, fill=factor(PAIS))) + geom_bar(st
                      labels=rev(c("Marruecos","España","África","Asia","América Latina y el Caribe","Europa Occidental","Europa Oriental")))+ 
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
-              legend.text = element_text(colour="black", size = 15),
+              legend.text = element_text(colour="black", size = 12),
               legend.position = c(.165, .80),
               legend.background = element_rect(fill=NA),
               #legend.justification=c(6,2),
@@ -2504,10 +2946,10 @@ A<- ggplot(CAP7_GRAFIC3, aes(x = CAT, y = POP, fill=factor(PAIS))) + geom_bar(st
               legend.key.size = unit(1.5, "lines"),
               
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 90,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
+              axis.text.x  = element_text(angle = 90,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
               axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
-              strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
+              strip.text=element_text(angle = 0,vjust=0.5, size=12,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
               panel.grid.major=element_line(colour="#BDBDBD"), 
@@ -2523,7 +2965,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 7.4: Evolución de la diversidad (índice de diversidad de Simpson) en función de la concentración de la población marroquí, 2000-2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP7_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_7_GRAFIC4.csv", stringsAsFactors=FALSE)
@@ -2541,14 +2983,14 @@ A <- ggplot(CAP7_GRAFIC4, aes(x=YEAR, y=PROP, group=CAT))+
                      labels=rev(c("< 20%","(20-30%]","(30-40%]", "(40-50%]", "(50-60%]", "(60-70%]"))) +
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
-              legend.text = element_text(colour="black", size = 15),
+              legend.text = element_text(colour="black", size = 12),
               legend.position = c(.105, .837),
               legend.background = element_rect(fill=NA),
               legend.key.size = unit(1.5, "lines"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2568,7 +3010,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 <br>
 
 #### **Figura 8.1: Flujos inmigratorios de surasiáticos en España, por sexo y lugar de nacimiento, 2000-2014** 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC1 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC1.csv", stringsAsFactors=FALSE)
@@ -2586,7 +3028,7 @@ A <- ggplot(CAP8_GRAFIC1, aes(x=YEAR, y=POP, group=SEX))+
                      labels=c("Hombres","Mujeres"))+
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
-              legend.text = element_text(colour="black", size = 15),
+              legend.text = element_text(colour="black", size = 12),
               legend.position = c(.90, .90),
               legend.background = element_rect(fill=NA),
               #legend.justification=c(6,2),
@@ -2594,9 +3036,9 @@ A <- ggplot(CAP8_GRAFIC1, aes(x=YEAR, y=POP, group=SEX))+
               #legend.key=element_rect(size=10),
               legend.key.size = unit(1.5, "lines"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2614,7 +3056,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 8.2: Pirámide de la población nacida en el Sur de Asia empadronada en España, 2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 CAP8_GRAFIC2 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC2.csv", stringsAsFactors=FALSE)
 
@@ -2635,8 +3077,8 @@ scale_y_continuous(limits=c(-15,15),breaks = c(-15, -10, -5,0,5,10,15),
                      labels = paste0(as.character(c(seq(15, 0, -5), seq(5, 15, 5))), "%")) + 
    scale_fill_grey()+
   
-  annotate("text", x = 18.7, y = -4.98, label = "Hombres\n96.741",size=10)+
-  annotate("text", x = 18.7, y = 4.95, label = "Mujeres\n34.485",size=10)+
+  annotate("text", x = 18.7, y = -4.98, label = "Hombres\n96.741",size=8)+
+  annotate("text", x = 18.7, y = 4.95, label = "Mujeres\n34.485",size=8)+
   
   
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
@@ -2647,9 +3089,9 @@ scale_y_continuous(limits=c(-15,15),breaks = c(-15, -10, -5,0,5,10,15),
               #legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2667,7 +3109,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 8.4: Principales municipios con población surasiática y distribución porcentual, España, 2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC4 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC4.csv", stringsAsFactors=FALSE)
@@ -2684,7 +3126,7 @@ A<- ggplot(CAP8_GRAFIC4, aes(x = MUN, y = POP, fill=MUN)) + geom_bar(stat = "ide
                                "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD"))+
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
-              legend.text = element_text(colour="black", size = 15),
+              legend.text = element_text(colour="black", size = 12),
               legend.position = "none",
               legend.background = element_rect(fill="#FFFFFF"),
               legend.direction = "horizontal", 
@@ -2692,9 +3134,9 @@ A<- ggplot(CAP8_GRAFIC4, aes(x = MUN, y = POP, fill=MUN)) + geom_bar(stat = "ide
               legend.key.size = unit(2.5, "lines"),
               
               axis.title.x = element_text(colour="black", size=15),
-              axis.text.x  = element_text(angle = 00,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
+              axis.text.x  = element_text(angle = 00,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2711,7 +3153,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 8.5: Índice de disimilitud de la población surasiática residente en Madrid y Barcelona, sobre la tendencia de los 10 principales municipios donde se encuentra cada una de las poblaciones, 2000-2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=14.5}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC5 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC5_PAKISTAN.csv", stringsAsFactors=FALSE)
@@ -2733,13 +3175,13 @@ A <- ggplot(CAP8_GRAFIC5, aes(x=YEAR, y=D, group=MUN))+
                                "Vitoria-Gasteiz","Madrid","Barcelona","Palma de Mallorca"))+
 
    facet_wrap(~PAIS, ncol = 1)+
-   annotate("segment", x = 2011, xend = 2012.2, y = 27.5, yend = 27.5,size=2,colour = c("#1C1C1C","#1C1C1C","#1C1C1C") )+
+   annotate("segment", x = 2010.5, xend = 2012, y = 27.5, yend = 27.5,size=2,colour = c("#1C1C1C","#1C1C1C","#1C1C1C") )+
    annotate("text", label = "Madrid", size = 6, x = 2013, y = 27.5)+
-   annotate("segment", x = 2010.5, xend = 2012.2, y = 17.5, yend = 17.5,size=2, linetype= 2,colour = c("#1C1C1C","#1C1C1C","#1C1C1C") )+
+   annotate("segment", x = 2010.5, xend = 2012, y = 17.5, yend = 17.5,size=2, linetype= 2,colour = c("#1C1C1C","#1C1C1C","#1C1C1C") )+
    annotate("text", label = "Barcelona", size = 6, x = 2013, y = 17.5)+
    theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
               legend.title = element_blank(),
-              legend.text = element_text(colour="black", size = 15),
+              legend.text = element_text(colour="black", size = 12),
               legend.position = "none",
               legend.background = element_rect(fill="#FFFFFF"),
               legend.direction = "horizontal", 
@@ -2747,10 +3189,10 @@ A <- ggplot(CAP8_GRAFIC5, aes(x=YEAR, y=D, group=MUN))+
               legend.key.size = unit(2.5, "lines"),
               
               axis.title.x = element_text(colour="black", size=17),
-              axis.text.x  = element_text(angle = 00,vjust=0.5, size=15,colour="black"),
-              axis.title.y = element_text(colour="black", size=15),
-              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
-              strip.text=element_text(angle = 0,vjust=0.5, size=18,colour="black", face = "bold"),
+              axis.text.x  = element_text(angle = 00,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
+              strip.text=element_text(angle = 0,vjust=0.5, size=15,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
               panel.grid.major=element_line(colour="#BDBDBD"), 
@@ -2766,7 +3208,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 8.11: Concentración de la población surasiática en el barrio de El Raval, 10 primeras nacionalizaciones, y pirámides de población surasiática y española, 2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=9.8}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC11 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC11_RAVAL.csv", stringsAsFactors=FALSE)
@@ -2788,11 +3230,11 @@ A<- ggplot(CAP8_GRAFIC11, aes(x = PAIS, y = POP, fill=PAIS)) + geom_bar(stat = "
               legend.key=element_rect(size=10),
               legend.key.size = unit(2.5, "lines"),
               
-              axis.title.x = element_text(colour="black", size=30),
-              axis.text.x  = element_text(angle = 00,vjust=0.5, size=30,colour="black"),
-              axis.title.y = element_text(colour="black", size=30),
-              axis.text.y  = element_text(vjust=0.5, size=30,colour="black"),
-              strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
+              axis.title.x = element_text(colour="black", size=12),
+              axis.text.x  = element_text(angle = 00,vjust=0.5, size=12,colour="black"),
+              axis.title.y = element_text(colour="black", size=12),
+              axis.text.y  = element_text(vjust=0.5, size=12,colour="black"),
+              strip.text=element_text(angle = 0,vjust=0.5, size=12,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
               panel.grid.major=element_line(colour="#BDBDBD"), 
@@ -2860,7 +3302,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 <br>
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC11 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC11_RAVAL_PIRAMIDE2.csv", stringsAsFactors=FALSE)
@@ -2891,9 +3333,9 @@ A<-ggplot(CAP8_GRAFIC11, aes(x=EDAD, y=PROP, fill=SEX))+
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=30,colour="black"),
-              axis.title.y = element_text(colour="black", size=30),
-              axis.text.y  = element_text(vjust=0.5, size=30,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
+              axis.title.y = element_text(colour="black", size=15),
+              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2911,7 +3353,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 #### **Figura 8.12: Concentración de la población surasiática en el barrio de Lavapiés, 10 primeras nacionalizaciones, y pirámides de población surasiática y española, 2014** 
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=9.8}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC11 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC11_LAVAPIES.csv", stringsAsFactors=FALSE)
@@ -2932,10 +3374,10 @@ A<- ggplot(CAP8_GRAFIC11, aes(x = PAIS, y = POP, fill=PAIS)) + geom_bar(stat = "
               legend.direction = "horizontal", 
               legend.key=element_rect(size=10),
               legend.key.size = unit(2.5, "lines"),
-              axis.title.x = element_text(colour="black", size=30),
-              axis.text.x  = element_text(angle = 00,vjust=0.5, size=30,colour="black"),
-              axis.title.y = element_text(colour="black", size=30),
-              axis.text.y  = element_text(vjust=0.5, size=30,colour="black"),
+              axis.title.x = element_text(colour="black", size=15),
+              axis.text.x  = element_text(angle = 00,vjust=0.5, size=15,colour="black"),
+              axis.title.y = element_text(colour="black", size=15),
+              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=13,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -2950,7 +3392,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 <br>
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC11 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC11_LAVAPIES_PIRAMIDE1.csv", stringsAsFactors=FALSE)
@@ -2985,9 +3427,9 @@ A<-ggplot(CAP8_GRAFIC11, aes(x=EDAD, y=POP, fill=SEX))+
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=30,colour="black"),
-              axis.title.y = element_text(colour="black", size=30),
-              axis.text.y  = element_text(vjust=0.5, size=30,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
+              axis.title.y = element_text(colour="black", size=15),
+              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
@@ -3003,7 +3445,7 @@ setwd("C:\\Users\\jgaleano\\Desktop\\ICARIA\\GRAFICOS")
 
 <br>
 
-```{r fig.width=16, fig.height=10}
+```{r fig.width=9.8, fig.height=7}
 library(ggplot2)
 library(scales)
 CAP8_GRAFIC11 <- read.csv("C:/Users/jgaleano/Desktop/ICARIA/CAP_8_GRAFIC11_LAVAPIES_PIRAMIDE2.csv", stringsAsFactors=FALSE)
@@ -3034,9 +3476,9 @@ A<-ggplot(CAP8_GRAFIC11, aes(x=EDAD, y=PROP, fill=SEX))+
               legend.justification=c(0,1), 
               legend.key.size = unit(1, "cm"),
               axis.title.x = element_blank(),
-              axis.text.x  = element_text(angle = 0,vjust=0.5, size=30,colour="black"),
-              axis.title.y = element_text(colour="black", size=30),
-              axis.text.y  = element_text(vjust=0.5, size=30,colour="black"),
+              axis.text.x  = element_text(angle = 0,vjust=0.5, size=15,colour="black"),
+              axis.title.y = element_text(colour="black", size=15),
+              axis.text.y  = element_text(vjust=0.5, size=15,colour="black"),
               strip.text=element_text(angle = 0,vjust=0.5, size=9,colour="black", face = "bold"),
               panel.background = element_rect(fill = "#FFFFFF"), 
               panel.grid = element_line(colour="#000000"),
