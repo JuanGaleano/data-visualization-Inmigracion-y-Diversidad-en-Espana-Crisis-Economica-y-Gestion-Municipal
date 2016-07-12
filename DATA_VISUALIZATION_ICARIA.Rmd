@@ -1,8 +1,5 @@
 ---
 title: "INMIGRACIÓN Y DIVERSIDAD EN ESPAÑA CRISIS ECONÓMICA Y GESTIÓN MUNICIPAL"
-author: ''
-date: ''
-output: html_document
 ---
 
 ***
