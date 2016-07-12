@@ -1,0 +1,1878 @@
+---
+title: "The rise and fall of the BNP (statistical material)"
+author: ""
+date: ""
+output: html_document
+---
+
+**Data analysis and visualization:** [***Juan Galeano***](http://ced.uab.es/directori/juan-galeano/)
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+***
+
+With an area of 37.781 km2 Barking and Dagenham accounts for the 2.36% of Greater London's area (1,594.720 km2). In population terms, people living in Barking and Dagenham in 2011 represented the 2.27% (185,911 out of 8,173,941) of Greater London's total population. (FIGURE 1)
+
+###FIGURE 1: Barking and Dagenham, Greater London
+![alt text](C:\Users\jgaleano\Desktop\STEPHEN\FINAL\IMAGE1_BARKING AND DAGENHAM GREATER LONDON (STAMEN TONER MAP).png) 
+**Source:** own elaboration using a shapefile of English Districts, UAs and London Boroughs 2011 downloaded from UK Data Service: [http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011](http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011). Raster Image: Stamen Toner/Open Street Maps (OMS)    
+     
+### FIGURE 2: Total population, London Boroughs 2011
+```{r fig.width=12, fig.height=10}
+library(ggplot2)
+library(grid)
+library(scales)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="City of London"|
+                 CODE2$District== "Westminster"|
+                 CODE2$District=="Kensington and Chelsea"|
+                 CODE2$District=="Hammersmith and Fulham"|
+                  CODE2$District=="Wandsworth"|
+                  CODE2$District=="Lambeth"|
+                  CODE2$District=="Southwark"|
+                  CODE2$District=="Tower Hamlets"|
+                  CODE2$District=="Hackney"|
+                  CODE2$District=="Islington"|
+                  CODE2$District=="Camden"|
+                  CODE2$District=="Brent"|
+                  CODE2$District=="Ealing"|
+                  CODE2$District=="Hounslow"|
+                  CODE2$District=="Richmond upon Thames"|
+                  CODE2$District=="Kingston upon Thames"|
+                  CODE2$District=="Merton"|
+                  CODE2$District=="Sutton"|
+                  CODE2$District=="Croydon"|
+                  CODE2$District=="Bromley"|
+                  CODE2$District=="Lewisham"|
+                  CODE2$District=="Greenwich"|
+                  CODE2$District=="Bexley"|
+                  CODE2$District=="Havering"|
+                  CODE2$District=="Barking and Dagenham"|
+                  CODE2$District=="Redbridge"|
+                  CODE2$District=="Newham"|
+                  CODE2$District=="Waltham Forest"|
+                  CODE2$District=="Haringey"|
+                  CODE2$District=="Enfield"|
+                  CODE2$District=="Barnet"|
+                  CODE2$District=="Harrow"|
+                  CODE2$District=="Hillingdon"),]
+
+GLDATA11<-GLDATA[(GLDATA$YEAR==2011),]
+
+DATA <- GLDATA11[, c(4, 28)]
+colnames(DATA)<- c("District", "TotalPop")
+DATA$District <- factor(DATA$District, 
+                           levels=c("City of London","Kensington and Chelsea","Kingston upon Thames",
+                                    "Hammersmith and Fulham","Barking and Dagenham","Richmond upon Thames",
+                                    "Sutton","Merton","Islington","Westminster","Camden","Bexley","Havering",
+                                    "Harrow","Hackney","Hounslow","Tower Hamlets","Greenwich","Haringey",
+                                    "Waltham Forest","Hillingdon","Lewisham","Redbridge","Southwark",
+                                    "Lambeth","Wandsworth","Newham","Bromley","Brent","Enfield","Ealing",
+                                    "Barnet","Croydon"))
+
+A<-ggplot(DATA, aes(x = District, y = TotalPop, fill=District)) + geom_bar(stat = "identity", colour="black")+coord_flip()+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD"))+
+  scale_y_continuous(breaks=c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+xlab("")
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/) 
+       
+            
+###FIGURE 3: Relative population growth 2011-2001, London Boroughs
+```{r fig.width=12, fig.height=10}
+library(ggplot2)
+library(grid)
+library(scales)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="City of London"|
+                 CODE2$District== "Westminster"|
+                 CODE2$District=="Kensington and Chelsea"|
+                 CODE2$District=="Hammersmith and Fulham"|
+                  CODE2$District=="Wandsworth"|
+                  CODE2$District=="Lambeth"|
+                  CODE2$District=="Southwark"|
+                  CODE2$District=="Tower Hamlets"|
+                  CODE2$District=="Hackney"|
+                  CODE2$District=="Islington"|
+                  CODE2$District=="Camden"|
+                  CODE2$District=="Brent"|
+                  CODE2$District=="Ealing"|
+                  CODE2$District=="Hounslow"|
+                  CODE2$District=="Richmond upon Thames"|
+                  CODE2$District=="Kingston upon Thames"|
+                  CODE2$District=="Merton"|
+                  CODE2$District=="Sutton"|
+                  CODE2$District=="Croydon"|
+                  CODE2$District=="Bromley"|
+                  CODE2$District=="Lewisham"|
+                  CODE2$District=="Greenwich"|
+                  CODE2$District=="Bexley"|
+                  CODE2$District=="Havering"|
+                  CODE2$District=="Barking and Dagenham"|
+                  CODE2$District=="Redbridge"|
+                  CODE2$District=="Newham"|
+                  CODE2$District=="Waltham Forest"|
+                  CODE2$District=="Haringey"|
+                  CODE2$District=="Enfield"|
+                  CODE2$District=="Barnet"|
+                  CODE2$District=="Harrow"|
+                  CODE2$District=="Hillingdon"),]
+
+GLDATA01<-GLDATA[(GLDATA$YEAR==2001),]
+GLDATA11<-GLDATA[(GLDATA$YEAR==2011),]
+CR<- data.frame(District=GLDATA11$District, 
+                CR =(GLDATA11[,28]-GLDATA01[,28])/GLDATA01[,28])
+
+CR$District <- factor(DATA$District, 
+                        levels=c("Kensington and Chelsea","City of London","Bromley","Merton",                
+                                 "Sutton","Havering","Bexley","Richmond upon Thames",  
+                                 "Kingston upon Thames","Hammersmith and Fulham","Westminster","Croydon",               
+                                 "Lewisham","Camden","Ealing","Lambeth",               
+                                 "Hillingdon","Barnet","Barking and Dagenham","Southwark",             
+                                 "Enfield","Wandsworth", "Harrow","Islington","Haringey","Redbridge",             
+                                 "Brent","Waltham Forest","Greenwich","Hounslow","Hackney","Newham","Tower Hamlets"))
+
+
+A<- ggplot(CR, aes(x = District, y = CR, fill=District)) + geom_bar(stat = "identity", colour="black")+coord_flip()+
+  scale_y_continuous(breaks=c(0,0.05,0.1,0.15,0.2,0.25,0.3),labels=percent)+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD"))+
+   #scale_y_continuous(breaks=c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+xlab("")
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)    
+
+***          
+## **<span style="color:red">Population Composition</span>**
+***
+    
+### FIGURE 4: Growth of ethnic diversity in Barking and Dagenham: Population composition (white/non-white) 1991, 2001, 2011
+
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller","White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian","Mixed Other","Caribbean","African","Other Black","Indian","Pakistani","Bangladeshi","Chinese","Other Asian","Arab","Others","Total population","White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP","Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP","Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu","Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated","Diversity")
+
+Mun1 <- CODE2[CODE2$District=="Barking and Dagenham",]
+Mun1 <-  Mun1[order(Mun1$YEAR),] 
+Munplot <-data.frame(YEAR=rep(c(1991,2001,2011),6),
+                     POP=c(c(Mun1[1:1,9],0,0),
+                             Mun1[1:3,10], 
+                             Mun1[1:3,11],
+                             Mun1[1:3,13],
+                             Mun1[1:3,12],
+                             Mun1[1:3,8]),
+                     ORIGEN=c(rep("White", 3),
+                              rep("White British", 3),
+                              rep("White Irish", 3),
+                              rep("White Other", 3),
+                              rep("White Gypsy Irish Traveller", 3),
+                              rep("Non-White", 3)))
+
+Munplot$ORIGEN<-factor(Munplot$ORIGEN, levels=c("White", "White British", "White Irish", 
+                                                "White Other", "White Gypsy Irish Traveller",
+                                                "Non-White"))
+Munplot[is.na(Munplot)]<- 0
+
+A<- ggplot(data=Munplot, aes(x=YEAR, y=POP, fill=ORIGEN)) + geom_bar(stat="identity", colour="black")+
+        scale_x_continuous(breaks=c(1991,2001,2011))+
+        expand_limits(y=c(0,225000))+
+        scale_fill_manual(values=c("#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484", "#6E6E6E", "#585858"),
+                          breaks=rev(c("White", "White British", "White Irish", 
+                                       "White Other", "White Gypsy Irish Traveller",
+                                       "Non-White")),
+                          labels=rev(c("White", "White British", "White Irish", 
+                                       "White Other", "White Gypsy Irish Traveller",
+                                       "Non-White")))+
+        theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+              legend.title = element_blank(),
+              #legend.text = element_text(colour="black", size = 45),
+              legend.position="right",
+              legend.background = element_rect(fill="#FFFFFF"),
+              #legend.justification=c(0,1), 
+              #legend.key.size = unit(3, "cm"),
+              axis.title.x = element_blank(),
+             # axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+            #  axis.title.y = element_text(face="bold", colour="black", size=45),
+              #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+              panel.background = element_rect(fill = "#FFFFFF"),
+              panel.grid = element_line(colour="#000000"),
+              panel.grid.major=element_line(colour="#BDBDBD"),
+              panel.grid.minor=element_line(colour="white"),
+              plot.background = element_rect(fill = "#FFFFFF"))+ ylab("Population\n")
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)  
+**Note:** the ethnic category "White" was split into "White British", "White Irish" and "White Other" in the 2001 Census round. The category "White Gypsy Irish Traveller" was added in the 2011 Census.
+
+### FIGURE 5: Growth in ethnic minority group population in Barking and Dagenham: Population composition (Ethnic groups other than white) 1991, 2001, 2011
+
+```{r fig.width=12, fig.height=7}
+Mun2 <- CODE2[CODE2$District=="Barking and Dagenham",]
+Mun2 <-  Mun2[order(Mun2$YEAR),] 
+Munplot <-data.frame(YEAR=rep(c(1991,2001,2011),6),
+                     POP=c(Mun2[1:3,18],Mun2[1:3,19],Mun2[1:3,21],Mun2[1:3,22],
+                           Mun2[1:3,23],Mun2[1:3,24]),
+                     ORIGEN=c(rep("Caribbean", 3),rep("African", 3),rep("Indian", 3),
+                              rep("Pakistani", 3),rep("Bangladeshi", 3),rep("Chinese", 3)))
+Munplot$ORIGEN<-factor(Munplot$ORIGEN, levels=c("Caribbean", "African", "Indian", "Pakistani", "Bangladeshi","Chinese", "Others"))
+
+ggplot(data=Munplot, aes(x=YEAR, y=POP, fill=ORIGEN)) + geom_bar(stat="identity", position=position_dodge(),colour="black")+
+        scale_x_continuous(breaks=c(1991,2001,2011))+
+        expand_limits(y=c(0,35000))+
+        scale_fill_manual(values=c("#E6E6E6","#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484", "#6E6E6E"),
+                          breaks=c("Caribbean", "African", "Indian", "Pakistani", "Bangladeshi","Chinese"),
+                          labels=c("Caribbean", "African", "Indian", "Pakistani", "Bangladeshi","Chinese"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="right",
+        legend.background = element_rect(fill="#FFFFFF"),
+        #legend.justification=c(0,1), 
+        #legend.key.size = unit(3, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+        ylab("Population\n")
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/) 
+    
+### FIGURE 5B: Growth in ethnic minority group population in Barking and Dagenham: Population composition (Mixed white groups and others) 1991, 2001, 2011
+
+```{r fig.width=12, fig.height=7}
+Mun3 <- CODE2[CODE2$District=="Barking and Dagenham",]
+Mun3 <-  Mun3[(Mun3$YEAR=="1991"|Mun3$YEAR=="2001"|Mun3$YEAR=="2011"),] 
+Mun3 <-  Mun3[order(Mun3$YEAR),] 
+Munplot <-data.frame(YEAR=rep(c(1991,2001,2011),8),
+                     POP=c(Mun3[1:3,14],
+                           Mun3[1:3,15],
+                           Mun3[1:3,16],
+                           Mun3[1:3,17],
+                           Mun3[1:3,20],
+                           Mun3[1:3,25],
+                           Mun3[1:3,27],
+                           Mun3[1:3,26]),
+                     ORIGEN=c(rep("Mixed White Caribbean", 3),
+                              rep("Mixed White African", 3),
+                              rep("Mixed White Asian", 3),
+                              rep("Mixed Other", 3),
+                              rep("Other Black", 3),
+                              rep("Other Asian", 3),
+                              rep("Others", 3),
+                              rep("Arab", 3)))
+
+Munplot[is.na(Munplot)]<- 0
+
+Munplot$ORIGEN<-factor(Munplot$ORIGEN, levels=c("Mixed White Caribbean", 
+                                                "Mixed White African", 
+                                                "Mixed White Asian", 
+                                                "Mixed Other", 
+                                                "Other Black",
+                                                "Other Asian",
+                                                "Others",
+                                                "Arab"))
+
+ggplot(data=Munplot, aes(x=YEAR, y=POP, fill=ORIGEN)) + geom_bar(stat="identity", position=position_dodge(),colour="black")+
+        scale_x_continuous(breaks=c(1991,2001,2011))+
+        scale_y_continuous(breaks=c(0,1000,2000,3000,4000,5000))+
+        expand_limits(y=c(0,5500))+
+        scale_fill_manual(values=c("#E6E6E6","#D8D8D8", "#BDBDBD", "#A4A4A4",
+                                   "#848484", "#6E6E6E", "#585858","#2E2E2E"),
+                          breaks=c("Mixed White Caribbean", "Mixed White African", "Mixed White Asian", "Mixed Other",
+                                   "Other Black", "Other Asian","Others", "Arab"),
+                          labels=c("Mixed White Caribbean", "Mixed White African", "Mixed White Asian", "Mixed Other",
+                                   "Other Black", "Other Asian","Others", "Arab"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="right",
+        legend.background = element_rect(fill="#FFFFFF"),
+        #legend.justification=c(0,1), 
+        #legend.key.size = unit(3, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+        ylab("Population\n")#+guides(fill=guide_legend(nrow=1,byrow=TRUE))
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/) 
+
+
+### FIGURE 6: Population structure by age groups, sex and ethnic group (White-Non White), Barking and Dagenham, 2011
+```{r fig.width=12, fig.height=7}
+
+library(ggplot2) 
+library(grid)
+library(dplyr)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/POPULATION_W_NONW_BY_AGES_GROUPS.csv", stringsAsFactors=FALSE)
+
+POPEDAD$group2 <- factor(POPEDAD$group2,levels = c("Non-White-Males",
+                                  "White-Males",
+                                  "Non-White-Females",
+                                  "White-Females"))
+
+POPEDAD$age <- factor(POPEDAD$age,
+                         levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44",
+                                  "45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85+" )) 
+
+b <-filter(POPEDAD,(group2=="White-Females"|group2=="Non-White-Females"))
+c <-filter(POPEDAD,(group2=="White-Males"|group2=="Non-White-Males"))
+
+ggplot(POPEDAD, aes(x = age, y = pop, fill = group2)) + 
+  geom_bar(data = b, 
+           colour = I("Black"),stat="identity", size=.3, colour="black",
+           aes(x = age, y = pop,
+               fill = group2), alpha = 1)+
+  geom_bar(data = c, 
+           colour = I("Black"),stat="identity", size=.3, colour="black",
+           aes(x = age, y = pop,
+               fill = group2), alpha = 1)+
+  coord_flip()+
+  scale_y_continuous(limits=c(-10000,10000),breaks = c(-10000,-8000,-6000,-4000,-2000,0,2000,4000,6000,8000,10000), 
+                     labels =paste0(as.character(c(seq(10000, 0, -2000), seq(2000, 10000, 2000))))) +
+  scale_fill_manual(values = c("#424242","#585858","#A4A4A4","#BDBDBD"),  
+                    breaks=c("Non-White-Males","White-Males","White-Females","Non-White-Females" ))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="bottom",
+        legend.background = element_rect(fill="#FFFFFF"),
+        #legend.justification=c(0,1), 
+        #legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  xlab("Age Groups\n")
+```
+##Source:## Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)].
+
+### FIGURE 7: Location Quotients Ethnic group: White British in Barking and Dagenham 2011
+![alt text](C:\Users\jgaleano\Desktop\STEPHEN\FINAL\FIG6_LQ_WHITE_BRITISH.png) 
+**Source:** own elaboration using a shapefile of English Output Areas 2011 downloaded from UK Data Service: [http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011](http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011). Raster Image: Stamen Toner/Open Street Maps (OMS). Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government License [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]. 
+      
+### FIGURE 7B: Location Quotients Ethnic group: White Other in Barking and Dagenham 2011
+![alt text](C:\Users\jgaleano\Desktop\STEPHEN\FINAL\FIG6b_LQ_WHITE_OTHER.png) 
+**Source:** own elaboration using a shapefile of English Output Areas 2011 downloaded from UK Data Service: [http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011](http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011). Raster Image: Stamen Toner/Open Street Maps (OMS). Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government License [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]. 
+      
+### FIGURE 8: Location Quotients Ethnic group: African in Barking and Dagenham 2011
+![alt text](C:\Users\jgaleano\Desktop\STEPHEN\FINAL\FIG5_LQ_AFRICANS.png) 
+**Source:** own elaboration using a shapefile of English Output Areas 2011 downloaded from UK Data Service: [http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011](http://census.edina.ac.uk/easy_download_data.html?data=England_oa_2011). Raster Image: Stamen Toner/Open Street Maps (OMS). Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government License [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]. 
+
+***          
+## **<span style="color:red">Housing</span>**
+***
+
+### FIGURE 9: Variation in housing tenure between London Boroughs (household reference persons), 2011
+```{r fig.width=12, fig.height=10}
+library (scales)
+library(grid)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE2011_GREATER_LONDON.csv", stringsAsFactors=FALSE)
+
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+
+POPEDAD$District<-factor(POPEDAD$District, levels=rev(c("Havering",
+                                                  "Bexley",
+                                                  "Bromley",
+                                                  "Sutton",
+                                                  "Harrow",
+                                                  "Kingston upon Thames",
+                                                  "Redbridge",
+                                                  "Richmond upon Thames",
+                                                  "Hillingdon",
+                                                  "Merton",
+                                                  "Croydon",
+                                                  "Enfield",
+                                                  "Barnet",
+                                                  "Ealing",
+                                                  "Hounslow",
+                                                  "Waltham Forest",
+                                                  "Barking and Dagenham",
+                                                  "Wandsworth",
+                                                  "Greenwich",
+                                                  "Brent",
+                                                  "Lewisham",
+                                                  "Haringey",
+                                                  "Kensington and Chelsea",
+                                                  "Hammersmith and Fulham",
+                                                  "Newham",
+                                                  "Lambeth",
+                                                  "Camden",
+                                                  "City of London,Westminster",
+                                                  "Southwark",
+                                                  "Islington",
+                                                  "Tower Hamlets",
+                                                  "Hackney"
+))) 
+
+A<-ggplot(data=POPEDAD, aes(x=District, y=PROP_TENURE, fill=District, label=round(PROP_TENURE*100, digits =2))) + geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_wrap(~ TENURE)+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#000000","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]
+
+### FIGURE 10: Variation in housing tenure between ethnic groups (household reference persons), Barking and Dagenham 2011
+
+```{r fig.width=12, fig.height=7}
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE2011_ALL_GROUPS.csv", stringsAsFactors=FALSE)
+
+library (scales)
+library(grid)
+
+POPEDAD<-POPEDAD[POPEDAD$AGE=="ALL", ]
+
+#POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=c("White Bristish", "White Irish", "White Other"))
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=rev(c("Bangladeshi", "Indian", "White Irish", "Caribbean", "Chinese", 
+                                              "Other Asian", "Pakistani", "White British", "Any other ethnic group",
+                                              "Other Black", "African", "White Other","Mixed Other", "Arab", 
+                                              "Mixed White and Asian", "Mixed White and Caribbean", "Mixed White and African",
+                                              "White Gypsy or Irish Traveller"))) 
+
+ggplot(data=POPEDAD, aes(x=GROUP, y=POP_PROP, fill=TENURE, label=round(POP_PROP*100, digits =2))) + geom_bar(stat="identity",colour="black")+
+  coord_flip()+geom_text(hjust=-0.15, size=3.5)+
+ # scale_x_continuous(breaks=c(2001,2011))+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_wrap(~ TENURE)+
+
+  #ggtitle(paste(paste(input$District," ", "(",unique(Mun2[5]),")",sep=""),"Ethnic groups other than White", sep=": "))+
+  scale_fill_manual(values=c("#D8D8D8", "#A4A4A4", "#6E6E6E"),
+                    breaks=c("Owned", "Private Rented","Social Rented"),
+                    labels=c("Owned", "Private Rented","Social Rented"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]
+        
+### FIGURE 11: Variation in housing tenure between ethnic groups, for young adults 2011, aged 25-34, percent of each ethnic group (household reference persons), Barking and Dagenham 2011
+```{r fig.width=12, fig.height=7}
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE2011_ALL_GROUPS.csv", stringsAsFactors=FALSE)
+
+library (scales)
+library(grid)
+
+POPEDAD<-POPEDAD[POPEDAD$AGE=="25_34", ]
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=rev(c("Bangladeshi", "Chinese", "Indian", "Pakistani", 
+                                                   "Caribbean", "White Irish","Other Asian","Mixed White and Asian", 
+                                                  "Any other ethnic group","White Other","Arab", "Mixed Other", 
+                                                  "White British", "African",  "Other Black",
+                                                  "Mixed White and Caribbean", "Mixed White and African",
+                                                  "White Gypsy or Irish Traveller"))) 
+
+A<-ggplot(data=POPEDAD, aes(x=GROUP, y=POP_PROP, fill=TENURE, label=round(POP_PROP*100, digits =2))) + geom_bar(stat="identity",colour="black")+
+  coord_flip()+geom_text(hjust=-0.15, size=3.5)+
+  # scale_x_continuous(breaks=c(2001,2011))+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_wrap(~ TENURE)+
+  
+  #ggtitle(paste(paste(input$District," ", "(",unique(Mun2[5]),")",sep=""),"Ethnic groups other than White", sep=": "))+
+  scale_fill_manual(values=c("#D8D8D8", "#A4A4A4", "#6E6E6E"),
+                    breaks=c("Owned", "Private Rented","Social Rented"),
+                    labels=c("Owned", "Private Rented","Social Rented"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+
+### FIGURE 12: Tenure regime by ethnic group (White groups), Barking and Dagenham 2001-2011
+```{r fig.width=12, fig.height=7}
+library (scales)
+library(grid)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE_2001_2011_WHITES.csv", stringsAsFactors=FALSE)
+POPEDAD<-POPEDAD[!POPEDAD$GROUP=="White",]
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=c("White Bristish", "White Irish", "White Other"))
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+
+
+A<-ggplot(data=POPEDAD, aes(x=YEAR, y=POP_PROP, fill=TENURE)) + 
+  geom_bar(stat="identity", position=position_dodge(),colour="black")+
+  scale_x_continuous(breaks=c(2001,2011))+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8),labels=percent)+
+  expand_limits(y=c(0,0.8))+
+  facet_wrap(~ GROUP)+
+  scale_fill_manual(values=c("#D8D8D8", "#A4A4A4", "#6E6E6E"),
+                    breaks=c("Owned", "Private Rented","Social Rented"),
+                    labels=c("Owned", "Private Rented","Social Rented"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="bottom",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(.5, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+
+     
+### FIGURE 13: Tenure regime by ethnic group, Barking and Dagenham 2001-2011
+
+```{r fig.width=12, fig.height=10}
+
+library (scales)
+library(grid)
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE_2001_2011_ETHNICGROUPS.csv", stringsAsFactors=FALSE)
+
+POPEDAD<-POPEDAD[!POPEDAD$GROUP=="White",]
+
+
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=c("Caribbean", "African", "Indian", "Pakistani", "Bangladeshi","Chinese"))
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+
+
+ggplot(data=POPEDAD, aes(x=YEAR, y=POP_PROP, fill=TENURE)) + geom_bar(stat="identity", position=position_dodge(),colour="black")+
+  scale_x_continuous(breaks=c(2001,2011))+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8),labels=percent)+
+  expand_limits(y=c(0,0.8))+
+  facet_wrap(~ GROUP)+
+  #ggtitle(paste(paste(input$District," ", "(",unique(Mun2[5]),")",sep=""),"Ethnic groups other than White", sep=": "))+
+  scale_fill_manual(values=c("#D8D8D8", "#A4A4A4", "#6E6E6E"),
+                    breaks=c("Owned", "Private Rented","Social Rented"),
+                    labels=c("Owned", "Private Rented","Social Rented"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="bottom",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(.5, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("") 
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+
+***          
+## **<span style="color:red">Labour Market</span>**
+***
+
+### FIGURE 14: Percent of women and men aged 25-49 working or looking for work by ethnic group, Barking and Dagenham 2011
+
+
+```{r fig.width=12, fig.height=10}
+library (scales)
+library(grid)
+library(ggplot2)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/ECONOMIC_ACTIVITY_GROUPS_SEX_BD2011.csv", stringsAsFactors=FALSE)
+POPEDAD<-POPEDAD[POPEDAD$CATPROP=="Working or looking for work", ]
+POPEDAD$SEX<-factor(POPEDAD$SEX, levels=c("Males", "Females")) 
+
+
+a<- subset(POPEDAD, SEX == "Males")
+b<- subset(POPEDAD, SEX == "Females")
+
+new <-data.frame( females=b$PROP,males=a$PROP, ystart=a$GROUP, yend=b$GROUP)
+
+new <- new[order(new$males), ]
+
+new$ystart2<-c(1:18)
+row.names(new)<-new$ystart
+
+p1 <- ggplot(new, aes(females,ystart2))
+
+        
+p2<- p1 +
+  geom_segment(aes(x=females, y=ystart2, xend=males, yend=ystart2),
+               colour="#D8D8D8",
+               size=2, alpha=1) 
+
+
+p3 <- p2 + geom_segment(aes(x=females, y=ystart2-0.25, xend=females, yend=ystart2+0.1),
+                  colour="#BDBDBD",
+                  size=7.5, alpha=1)+
+  geom_text(hjust=0.5, vjust=-0.5, size=4,label=round(new$females*100, digits =1))
+  
+
+p4<- p3+ geom_segment(aes(x=males, y=ystart2-0.25, xend=males, yend=ystart2+0.1),
+                 colour="#6E6E6E",
+                 size=7.5, alpha=1)+
+  geom_text(aes(x=males),hjust=0.5, vjust=-0.5, size=4,label=round(new$males*100, digits =1))+
+  scale_x_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1),labels=percent)+
+  expand_limits(x=c(0,1))+
+  scale_y_continuous(breaks=c(1:18),
+                     labels=row.names(new))+
+  
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="right",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("Percent of women and men working or looking for work")
+p4
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+     
+
+### FIGURE 15: Full-time, part-time, self-employment and unemployment, men and women aged 25 to 49 years by ethnic group, Barking and Dagenham 2011
+
+```{r fig.width=12, fig.height=10}
+library (scales)
+library(grid)
+library(ggplot2)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/ECONOMIC_ACTIVITY_GROUPS_SEX_BD2011_CATEGORIES.csv", stringsAsFactors=FALSE)
+POPEDAD$SEX<-factor(POPEDAD$SEX, levels=c("Males", "Females")) 
+POPEDAD$CAT<-factor(POPEDAD$CAT, levels=c("Employed full-time",
+                                          "Employed part-time", 
+                                          "Self-employed (full and part-time)", 
+                                          "Unemployed")) 
+
+POPEDAD$CAT3<-rep(rep(c("Employed part-time",
+                        "Employed full-time",
+                        "Self-employed\n(full and part-time)", 
+                        "Unemployed"), each=18 ),2)
+
+males<-POPEDAD[POPEDAD$SEX=="Males", ]
+
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=subset(males, CAT  == "Employed full-time")[order(subset(males, CAT  == "Employed full-time")$PROP),3])
+
+A<-ggplot(data=POPEDAD, aes(x=GROUP, y=PROP, fill=SEX, label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_grid(SEX~  CAT3)+
+  scale_fill_manual(values=c("#585858","#BDBDBD"),
+                    breaks=c("Males", "Females"),
+                    labels=c("Males", "Females"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+       # strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+       # axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+       # axis.title.y = element_text(face="bold", colour="black", size=45),
+       #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+
+
+FIGURE 15b: Occupational class by ethnic group, Barking and Dagenham 2011
+```{r fig.width=12, fig.height=7}
+library (scales)
+library(grid)
+library(ggplot2)
+
+OCC <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/OCCUPATION_GROUPS_BD_2011.csv", stringsAsFactors=FALSE)
+
+OCC$OCC2<-rep(c("Administrative\nand secretarial",
+                "Associated\nproffesional",
+                "Elementary\noccupations",
+                "Managers and\nsenior officials",
+                "Personal\nservice",
+                "Process; plant\nand machine operatives",
+                "Professional\noccupations", 
+                "Sales and\ncustomer service ",
+                "Skilled\ntrades"), each=16 )
+
+OCC$OCC2<-factor(OCC$OCC2, levels=c("Managers and\nsenior officials",
+                                  "Professional\noccupations", 
+                                  "Associated\nproffesional",
+                                  "Administrative\nand secretarial",
+                                  "Skilled\ntrades",
+                                  "Personal\nservice",
+                                  "Sales and\ncustomer service ",
+                                  "Process; plant\nand machine operatives",
+                                  "Elementary\noccupations")) 
+
+OCC$GROUP<-factor(OCC$GROUP, levels=subset(OCC, OCC2  == "Managers and\nsenior officials")[order(subset(OCC, OCC2  == "Managers and\nsenior officials")$PROP),1])
+
+A<-ggplot(data=OCC, aes(x=GROUP, y=PROP, fill=OCC2, label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_grid(~  OCC2)+
+  scale_fill_manual(values=c("#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484","#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484","#848484"),
+                    breaks=c("Managers and\nsenior officials",
+                             "Professional\noccupations", 
+                             "Associated\nproffesional",
+                             "Administrative\nand secretarial",
+                             "Skilled\ntrades",
+                             "Personal\nservice",
+                             "Sales and\ncustomer service ",
+                             "Process; plant\nand machine operatives",
+                             "Elementary\noccupations"),
+                    labels=c("Managers and\nsenior officials",
+                              "Professional\noccupations", 
+                              "Associated\nproffesional",
+                              "Administrative\nand secretarial",
+                              "Skilled\ntrades",
+                              "Personal\nservice",
+                              "Sales and\ncustomer service ",
+                              "Process; plant\nand machine operatives",
+                              "Elementary\noccupations"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        axis.text.x  = element_text(angle = 90,vjust=0.5),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]     
+     
+***          
+## **<span style="color:red">IDENTITY</span>** 
+***
+
+### FIGURE 16: National identity by ethnic groups in Barking and Dagenham, 2011
+
+
+```{r fig.width=12, fig.height=7}
+library (scales)
+library(grid)
+library(ggplot2)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/INDENTITY_2011_ALL_ETHNICS.csv", stringsAsFactors=FALSE)
+POPEDAD$IDENTITY2<-rep(c("British indetity only","English identity only", "Other UK or\nUK combination identity","Other identity only"), each=18 )
+
+POPEDAD$IDENTITY2<-factor(POPEDAD$IDENTITY2, levels=c("British indetity only","English identity only", "Other UK or\nUK combination identity","Other identity only")) 
+
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=subset(POPEDAD, IDENTITY  == "British indetity only")[order(subset(POPEDAD, IDENTITY  == "British indetity only")$PROP_POP),1])
+
+A<-ggplot(data=POPEDAD, aes(x=GROUP, y=PROP_POP, fill=IDENTITY2, label=round(PROP_POP*100, digits =2))) + 
+  geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_grid(~  IDENTITY2)+
+  scale_fill_manual(values=c("#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484"),
+                    breaks=c("British indetity only","English identity only", 
+                             "Other UK or\nUK combination identity","Other identity only"),
+                    labels=c("British indetity only","English identity only", 
+                             "Other UK or\nUK combination identity","Other identity only"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+    
+### FIGURE 17: National identity by religious groups in Barking and Dagenham, 2011
+
+```{r fig.width=12, fig.height=7}
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/INDENTITY_2011_ALL_RELIGIONS.csv", stringsAsFactors=FALSE)
+
+library (scales)
+library(grid)
+library(ggplot2)
+
+POPEDAD$IDENTITY2<-rep(c("British indetity only",
+                         "English identity only", 
+                         "Other UK or\nUK combination identity",
+                         "Other identity only"), each=6 )
+
+POPEDAD$IDENTITY2<-factor(POPEDAD$IDENTITY2, levels=c("British indetity only",
+                                                      "English identity only", 
+                                                      "Other UK or\nUK combination identity",
+                                                      "Other identity only")) 
+
+
+
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=subset(POPEDAD, IDENTITY  == "British indetity only")[order(subset(POPEDAD, IDENTITY  == "British indetity only")$PROP_POP),1])
+
+A<-ggplot(data=POPEDAD, aes(x=GROUP, y=PROP_POP, fill=IDENTITY2, label=round(PROP_POP*100, digits =2))) + 
+  geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.25,0.5,0.75,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_grid(~  IDENTITY2)+
+    scale_fill_manual(values=c("#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484"),
+                    breaks=c("British indetity only","English identity only", 
+                             "Other UK or\nUK combination identity","Other identity only"),
+                    labels=c("British indetity only","English identity only", 
+                             "Other UK or\nUK combination identity","Other identity only"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+
+### FIGURE 18: National identity categories, population structure by age and sex in Barking and Dagenham, 2011
+
+```{r fig.width=12, fig.height=10}
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/INDENTITY_2011_SEX_AGE.csv", stringsAsFactors=FALSE)
+
+
+POPEDAD$AGE <- factor(POPEDAD$AGE,levels=c("0-4","5-9","10-14","15-19","20-24","25-29","30-34",
+                                "35-39","40-44","45-49","50-54","55-59","60-64",
+                                "65-69","70-74","75-79","80-84","85+")) 
+
+
+levels(POPEDAD$AGE)<-c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44",
+                       "45-49","50-54","55-59","60-64","65-69","70-74","75-79","80-84","85+" )
+
+library(ggplot2) 
+library(grid)
+
+A<-ggplot(POPEDAD, aes(x = AGE, y = PROP_POP2, fill = IDENTITY2)) + 
+  geom_bar(data = POPEDAD[(POPEDAD$IDENTITY2=="Males-British indetity only"|
+                            POPEDAD$IDENTITY2=="Males-English identity only"|
+                            POPEDAD$IDENTITY2=="Males-Other UK or UK combination identity"|
+                            POPEDAD$IDENTITY2=="Males-Other identity only"),], 
+           colour = I("Black"),stat="identity", size=.3, colour="black",
+           aes(x = AGE, y = PROP_POP2,fill = IDENTITY2), alpha = 1)+
+  geom_bar(data = POPEDAD[(POPEDAD$IDENTITY2=="Females-British indetity only"|
+                             POPEDAD$IDENTITY2=="Females-English identity only"|
+                             POPEDAD$IDENTITY2=="Females-Other UK or UK combination identity"|
+                             POPEDAD$IDENTITY2=="Females-Other identity only"),],  
+           colour = I("Black"),stat="identity", size=.3, colour="black",
+           aes(x = AGE, y = PROP_POP2,
+               fill = IDENTITY2), alpha = 1)+
+  coord_flip()+
+  facet_wrap(~  IDENTITY, ncol=2)+
+  scale_y_continuous(limits=c(-8, 8),breaks = c(-8,-4,0,4,8), 
+                     labels =paste(paste0(as.character(c(seq(8, 0, -4), seq(4, 8, 4)))), "%",sep="")) +
+  scale_fill_manual(values = c("#A4A4A4","#A4A4A4","#A4A4A4","#A4A4A4","#424242","#424242","#424242","#424242"),  
+                    breaks=c("Males-British indetity only","Males-English identity only",
+                             "Males-Other UK or UK combination identity","Males-Other identity only",
+                             "Females-British indetity only","Females-English identity only",
+                             "Females-Other UK or UK combination identity","Females-Other identity only"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"), #A4A4A4
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  xlab("")+  ylab("")+
+  annotate("text", x = 16.5, y = -4, 
+           angle = 0,label = "Males",size=5)+
+  annotate("text", x = 16.5, y = 4, 
+           angle = 0,label = "Females",size=5)
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]    
+    
+***          
+## **<span style="color:red">Ethnic Mixing</span>**
+***
+
+### FIGURE 19: Population Diversity, London Boroughs 2001 and 2011
+
+```{r fig.width=12, fig.height=10}
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="City of London"|
+                   CODE2$District== "Westminster"|
+                   CODE2$District=="Kensington and Chelsea"|
+                   CODE2$District=="Hammersmith and Fulham"|
+                   CODE2$District=="Wandsworth"|
+                   CODE2$District=="Lambeth"|
+                   CODE2$District=="Southwark"|
+                   CODE2$District=="Tower Hamlets"|
+                   CODE2$District=="Hackney"|
+                   CODE2$District=="Islington"|
+                   CODE2$District=="Camden"|
+                   CODE2$District=="Brent"|
+                   CODE2$District=="Ealing"|
+                   CODE2$District=="Hounslow"|
+                   CODE2$District=="Richmond upon Thames"|
+                   CODE2$District=="Kingston upon Thames"|
+                   CODE2$District=="Merton"|
+                   CODE2$District=="Sutton"|
+                   CODE2$District=="Croydon"|
+                   CODE2$District=="Bromley"|
+                   CODE2$District=="Lewisham"|
+                   CODE2$District=="Greenwich"|
+                   CODE2$District=="Bexley"|
+                   CODE2$District=="Havering"|
+                   CODE2$District=="Barking and Dagenham"|
+                   CODE2$District=="Redbridge"|
+                   CODE2$District=="Newham"|
+                   CODE2$District=="Waltham Forest"|
+                   CODE2$District=="Haringey"|
+                   CODE2$District=="Enfield"|
+                   CODE2$District=="Barnet"|
+                   CODE2$District=="Harrow"|
+                   CODE2$District=="Hillingdon"),]
+DIVERSITY_GREATERL<-GLDATA[(GLDATA$YEAR==2001|GLDATA$YEAR==2011),c(4,50,7)]
+
+DIVERSITY_GREATERL$District<-factor(DIVERSITY_GREATERL$District, levels=subset(DIVERSITY_GREATERL, YEAR  == "2011")[order(subset(DIVERSITY_GREATERL,YEAR  == "2011")$Diversity),1])
+
+DIVERSITY_GREATERL$YEAR <-factor(DIVERSITY_GREATERL$YEAR, levels = c(2001, 2011))
+
+library(ggplot2)
+
+A<-ggplot(data=DIVERSITY_GREATERL, aes(x=District, y=Diversity, fill=factor(District),label=round(Diversity, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15,size=3.5,position = position_dodge(width=1))+
+  # scale_x_continuous(breaks=c(2001,2011))+
+  scale_y_continuous(breaks=c(0,20,40,60,80,100))+
+  expand_limits(y=c(0,100))+
+  facet_wrap(~  YEAR, ncol=2)+
+  
+  #ggtitle(paste(paste(input$District," ", "(",unique(Mun2[5]),")",sep=""),"Ethnic groups other than White", sep=": "))+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD",
+                               "#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        #axis.title.x = element_text(face="bold", colour="black", size=45),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 00,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("\nSimpson diversity index")+xlab("") 
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)
+
+### FIGURE 20: Change in ethnic group segregation in Barking and Dagenham, 2001-2011
+
+```{r fig.width=12, fig.height=7}
+setwd("C:\\Users\\jgaleano\\Desktop\\STEPHEN")
+library(maptools)
+library(rgdal)
+library(spdep)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+
+UKSHP <- readOGR(".", "BARDAGESHP01")
+head(UKSHP@data)
+plot(UKSHP)
+DATOSMAPA <-UKSHP@data
+
+POPDATA2001OA <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/POPULATION_OUTPUT_AREAS_ENGLAND_2001.csv", stringsAsFactors=FALSE)
+POPDATA2001OABD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/POPULATION_OUTPUT_AREAS_B_D_2011_SEG.csv", stringsAsFactors=FALSE)
+
+POPDATA2001OABD<-POPDATA2001OA[POPDATA2001OA$GEO_CODE %in% UKSHP@data$ONS_LABEL, ]
+POPDATA2001OABD$TotPop <- rowSums(POPDATA2001OABD[, c(8,10:13,15:23)]) 
+POPDATA2001OABD$RMB <-1
+
+POPDATA2011OABD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/POPULATION_OUTPUT_AREAS_B_D_2011_SEG.csv", stringsAsFactors=FALSE)
+POPDATA2011OABD$RMB <-1
+
+RMBList <- list(POPDATA2001OABD,POPDATA2011OABD)
+
+### creo columnas con las poblaciones totales que me interesan
+dfList1 <- lapply(RMBList, function(df) {
+  df <- mutate(df, WHITET = sum(WHITE),
+               WHITEOTHERT = sum(White_Other),
+               MIXEDT    = sum(MIXED),
+               IndianT    = sum(Indian),
+               PakistaniT    = sum(Pakistani),
+               BangladeshiT    = sum(Bangladeshi),
+               CaribbeanT = sum(Caribbean),
+               AfricanT = sum(African),
+               Other_BlackT = sum(Other_Black),
+               ChineseT = sum(Chinese), 
+               Other_Ethnic_GroupT  = sum(Other_Ethnic_Group),
+               TMENOSWT = sum(TMENOSW),
+               TMENOSWOT = sum(TMENOSWO),
+               TMENOSMT = sum(TMENOSM),
+               TMENOSIT = sum(TMENOSI),
+               TMENOSPT = sum(TMENOSP),
+               TMENOSBT = sum(TMENOSB),
+               TMENOSCT = sum(TMENOSC),
+               TMENOSAT = sum(TMENOSA),
+               TMENOSOBT = sum(TMENOSOB),
+               TMENOSCHT = sum(TMENOSCH),
+               TMENOSOTT = sum(TMENOSOT))                   
+  df
+})
+### dissimilarity index
+
+dfList2 <- lapply(dfList1, function(df) {
+  df <- mutate(df, DW = abs((WHITE/WHITET)-(TMENOSW/TMENOSWT)),
+               DOW = abs((White_Other/WHITEOTHERT)-(TMENOSWO/TMENOSWOT)),
+               DM = abs((MIXED/MIXEDT)-(TMENOSM/TMENOSMT)),
+               DI = abs((Indian/IndianT)-(TMENOSI/TMENOSIT)),
+               DP = abs((Pakistani/PakistaniT)-(TMENOSP/TMENOSPT)),
+               DB = abs((Bangladeshi/BangladeshiT)-(TMENOSB/TMENOSBT)),
+               DC = abs((Caribbean/CaribbeanT)-(TMENOSC/TMENOSCT)),
+               DA = abs((African/AfricanT)-(TMENOSA/TMENOSAT)),
+               DOB = abs((Other_Black/Other_BlackT)-(TMENOSOB/TMENOSOBT)),
+               DCH = abs((Chinese/ChineseT)-(TMENOSCH/TMENOSCHT)),
+               DOT = abs((Other_Ethnic_Group/Other_Ethnic_GroupT)-(TMENOSOT/TMENOSOTT)))                   
+  df
+})
+
+dfList3 <- lapply(dfList2, function(df) {
+  df <- ddply(df, c("RMB"), function (x) c(count=nrow(x),
+                                           sum=(sum(x$DW)*0.5)*100,
+                                           sum=(sum(x$WHITE)),
+                                           sum=(sum(x$DOW)*0.5)*100,
+                                           sum=(sum(x$White_Other)),
+                                           sum=(sum(x$DM)*0.5)*100,
+                                           sum=(sum(x$MIXED)),
+                                           sum=(sum(x$DI)*0.5)*100,
+                                           sum=(sum(x$Indian)),
+                                           sum=(sum(x$DP)*0.5)*100,
+                                           sum=(sum(x$Pakistani)),
+                                           sum=(sum(x$DB)*0.5)*100,
+                                           sum=(sum(x$Bangladeshi)),
+                                           sum=(sum(x$DC)*0.5)*100,
+                                           sum=(sum(x$Caribbean)),
+                                           sum=(sum(x$DA)*0.5)*100,
+                                           sum=(sum(x$African)),
+                                           sum=(sum(x$DOB)*0.5)*100,
+                                           sum=(sum(x$Other_Black)),
+                                           sum=(sum(x$DCH)*0.5)*100, 
+                                           sum=(sum(x$Chinese)),
+                                           sum=(sum(x$DOT)*0.5)*100,
+                                           sum=(sum(x$Other_Ethnic_Group))))                   
+  df
+})
+
+
+df <- do.call("rbind", dfList3)
+df$YEAR <- c(2001,2011)
+colnames(df)<- c("RMB", "output areas",
+                 "DWHITE", "WHITE",
+                 "DWhite_Other","White_Other",
+                 "DMIXED", "MIXED",
+                 "DIndian","Indian",
+                 "DPakistani", "Pakistani",
+                 "DBangladeshi","Bangladeshi", 
+                 "DCaribbean", "Caribbean",
+                 "DAfrican","African",
+                 "DOther_Black","Other_Black",
+                 "DChinese", "Chinese", 
+                 "DOther_Ethnic_Group", "Other_Ethnic_Group",
+                 "YEAR")
+
+GROUP <- c("Withe British", "White Other", "Mixed", "Indian", "Pakistani", "Bangladeshi", "Caribbean",
+           "African", "Other Black","Chinese","Other")
+
+SEG01 <- with(df, t(df[1,c(3,5,7,9,11,13,15,17,19,21,23)]))
+SEG11 <- with(df, t(df[2,c(3,5,7,9,11,13,15,17,19,21,23)]))
+
+SEGDF <-data.frame(GROUP=rep(GROUP,2), SEG=c(SEG01,SEG11), YEAR=rep(c(2001,2011), each=11))
+SEGDF$GROUP<-factor(SEGDF$GROUP, levels=subset(SEGDF, YEAR  == "2011")[order(subset(SEGDF,YEAR  == "2011")$SEG),1])
+SEGDF$YEAR <-factor(SEGDF$YEAR, levels = c(2011, 2001))
+
+A<-ggplot(data=SEGDF, aes(x=GROUP, y=SEG, fill=factor(YEAR),label=round(SEG, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15,size=3.5,position = position_dodge(width=1))+
+  scale_y_continuous(breaks=c(0,20,40,60,80,100))+
+  expand_limits(y=c(0,100))+
+    scale_fill_manual(values=c("#585858","#BDBDBD"),
+                    breaks=c("2001", "2011"),
+                    labels=c("2001", "2011"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="right",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(.5, "cm"),
+        #axis.title.x =  element_text(face="bold", colour="black", size=45),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 00,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("\nDissimilarity Index")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]  
+   
+### FIGURE 22: People aged 16 and over with no qualifications and degree level qualifications by ethnic group, Barking and Dagenham 2011
+
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+library(scales)
+
+QUALI <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/QUALIFICATIONS_2011_ALL_ETHNIC_GROUPS.csv", stringsAsFactors=FALSE)
+
+QUALI$GROUP<-factor(QUALI$GROUP, levels=subset(QUALI, QUALI  == "No qualifications")[order(subset(QUALI,QUALI  == "No qualifications")$PROP),1])
+
+QUALI$QUALI <-factor(QUALI$QUALI, levels = c("No qualifications","Degree level qualifications"))
+
+A<-ggplot(data=QUALI, aes(x=GROUP, y=PROP, fill=factor(QUALI),label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15,size=3.5,position = position_dodge(width=1))+
+  facet_wrap(~  QUALI, ncol=2)+
+  # scale_x_continuous(breaks=c(2001,2011))+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1), labels=percent)+
+  expand_limits(y=c(0,1))+
+  
+  #ggtitle(paste(paste(input$District," ", "(",unique(Mun2[5]),")",sep=""),"Ethnic groups other than White", sep=": "))+
+  scale_fill_manual(values=c("#585858","#BDBDBD"), 
+                    breaks=rev(c("Degree level qualifications", "No qualifications")),
+                    labels=rev(c("Degree level qualifications", "No qualifications")))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 00,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]     
+
+### FIGURE 23: Qualifications by age and ethnic group, Barking and Dagenham 2011
+
+```{r fig.width=12, fig.height=10}
+library(ggplot2)
+library(grid)
+library(scales)
+
+QUALI2 <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/QUALIFICATIONS_2011_AGE_ETHNIC_GROUPS.csv", stringsAsFactors=FALSE)
+
+QUALI2$GROUP<-factor(QUALI2$GROUP, levels=subset(QUALI2, QUALI  == "No qualifications")[order(subset(QUALI2,QUALI  == "No qualifications")$PROP),1])
+
+QUALI2$QUALI <-factor(QUALI2$QUALI, levels = c("No qualifications","Other qualifications", "Below degree level qualifications", "Degree level qualifications"))
+
+A<-ggplot(data=QUALI2, aes(x=GROUP, y=PROP, fill=factor(QUALI),label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15,size=3.5,position = position_dodge(width=1))+
+  facet_grid(AGE~  QUALI)+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1), labels=percent)+
+  expand_limits(y=c(0,1))+
+  scale_fill_manual(values=c("#D8D8D8", "#BDBDBD", "#A4A4A4", "#848484"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]  
+    
+***          
+## **<span style="color:red">SOME COMPARISON BETWEEN DISTRICTS WHERE THE BNP WON SEATS</span>**
+***
+
+### FIGURE 24: Total Population 2011, Districts where the BNP won seats
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="Barking and Dagenham"|
+                   CODE2$District== "Burnley"|
+                   CODE2$District=="Stoke-on-Trent"|
+                   CODE2$District=="Epping Forest"|
+                   CODE2$District=="Kirklees"|
+                   CODE2$District=="Sandwell"),]
+
+GLDATA01<-GLDATA[(GLDATA$YEAR==2001),]
+
+GLDATA11<-GLDATA[(GLDATA$YEAR==2011),]
+                   
+                   
+DATA <- GLDATA11[, c(4, 28)]
+colnames(DATA)<- c("District", "TotalPop")
+
+DATA$District <- factor(DATA$District, 
+                        levels=c("Burnley", "Epping Forest", "Barking and Dagenham", 
+                                 "Stoke-on-Trent", "Sandwell", "Kirklees"))
+
+A<-ggplot(DATA, aes(x = District, y = TotalPop, fill=District)) + geom_bar(stat = "identity", colour="black")+coord_flip()+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#000000","#BDBDBD","#BDBDBD","#BDBDBD"))+
+  scale_y_continuous(breaks=c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+xlab("")
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)
+    
+### FIGURE 25: Relative total population growth 2011-2001, Districts where the BNP won seats
+
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+library(scales)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="Barking and Dagenham"|
+                   CODE2$District== "Burnley"|
+                   CODE2$District=="Stoke-on-Trent"|
+                   CODE2$District=="Epping Forest"|
+                   CODE2$District=="Kirklees"|
+                   CODE2$District=="Sandwell"),]
+
+GLDATA01<-GLDATA[(GLDATA$YEAR==2001),]
+
+GLDATA11<-GLDATA[(GLDATA$YEAR==2011),]
+                   
+                   CR<- data.frame(District=GLDATA11$District, 
+                CR =(GLDATA11[,28]-GLDATA01[,28])/GLDATA01[,28])
+
+CR$District <- factor(DATA$District, 
+                      levels=c("Burnley", "Epping Forest", "Stoke-on-Trent", "Sandwell", "Kirklees", "Barking and Dagenham"))
+
+A<- ggplot(CR, aes(x = District, y = CR, fill=District)) + geom_bar(stat = "identity", colour="black")+coord_flip()+
+  scale_y_continuous(breaks=c(-0.05,0,0.05,0.1,0.15),labels=percent)+
+  expand_limits(y=c(-0.05,0.15))+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000"))+
+  #scale_y_continuous(breaks=c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+xlab("")
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)
+   
+### FIGURE 26: Relative White British population growth 2011-2001, Districts where the BNP won seats
+
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+library(scales)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="Barking and Dagenham"|
+                   CODE2$District== "Burnley"|
+                   CODE2$District=="Stoke-on-Trent"|
+                   CODE2$District=="Epping Forest"|
+                   CODE2$District=="Kirklees"|
+                   CODE2$District=="Sandwell"),]
+
+GLDATA01<-GLDATA[(GLDATA$YEAR==2001),]
+
+GLDATA11<-GLDATA[(GLDATA$YEAR==2011),]
+                   
+CR<- data.frame(District=GLDATA11$District, 
+                CR =(GLDATA11[,28]-GLDATA01[,28])/GLDATA01[,28])
+
+CR<- data.frame(District=GLDATA11$District, 
+                CR =(GLDATA11[,10]-GLDATA01[,10])/GLDATA01[,10])
+
+
+CR$District <- factor(DATA$District, 
+                      levels=c("Kirklees", "Epping Forest", "Stoke-on-Trent", "Burnley", "Sandwell", "Barking and Dagenham"))
+
+
+A<- ggplot(CR, aes(x = District, y = CR, fill=District)) + geom_bar(stat = "identity", colour="black")+coord_flip()+
+  scale_y_continuous(breaks=c(-0.4,-0.3, -0.2,-0.1,0),labels=percent)+
+  expand_limits(y=c(-0.4,0))+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000"))+
+  #scale_y_continuous(breaks=c(0, 50000, 100000, 150000, 200000, 250000, 300000, 350000, 400000))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold",vjust=1, colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+xlab("")
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)
+    
+### FIGURE 27: Population Diversity, Districts BNP 2001 and 2011
+
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+library(scales)
+
+load(url('http://gedemced.uab.cat/images/CODE2.Rdata'))
+
+colnames (CODE2) <- c( "ONS2011code","region 2001","distcode 2011","District","latype 2011",
+                       "opcsclass 13","YEAR","Non White", "White","White British","White Irish","White Gypsy Irish Traveller",
+                       "White Other","Mixed White Caribbean","Mixed White African","Mixed White Asian",          
+                       "Mixed Other","Caribbean","African","Other Black","Indian","Pakistani",                  
+                       "Bangladeshi","Chinese","Other Asian","Arab","Others","Total population",           
+                       "White PROP","Caribbean PROP","African PROP","Other Black PROP","Indian PROP",
+                       "Pakistani PROP","Bangladeshi PROP","Chinese PROP","Other Asian PROP",           
+                       "Other PROP","Mixed PROP","Arab PROP","Christian","Buddhist","Hindu",                      
+                       "Jewish","Muslim","Sikh","Other religion","No religion","Religion not stated",        
+                       "Diversity")
+
+GLDATA <- CODE2[(CODE2$District=="Barking and Dagenham"|
+                   CODE2$District== "Burnley"|
+                   CODE2$District=="Stoke-on-Trent"|
+                   CODE2$District=="Epping Forest"|
+                   CODE2$District=="Kirklees"|
+                   CODE2$District=="Sandwell"),]
+
+DIVERSITY_GREATERL<-GLDATA[(GLDATA$YEAR==2001|GLDATA$YEAR==2011),c(4,50,7)]
+
+DIVERSITY_GREATERL$District<-factor(DIVERSITY_GREATERL$District, levels=subset(DIVERSITY_GREATERL, YEAR  == "2011")[order(subset(DIVERSITY_GREATERL,YEAR  == "2011")$Diversity),1])
+
+DIVERSITY_GREATERL$YEAR <-factor(DIVERSITY_GREATERL$YEAR, levels = c(2001, 2011))
+
+A<-ggplot(data=DIVERSITY_GREATERL, aes(x=District, y=Diversity, fill=factor(District),label=round(Diversity, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15,size=3.5,position = position_dodge(width=1))+
+  scale_y_continuous(breaks=c(0,20,40,60,80,100))+
+  expand_limits(y=c(0,100))+
+  facet_wrap(~  YEAR, ncol=2)+
+    scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+       #axis.title.x = element_text(face="bold", colour="black", size=45),
+       #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+       #axis.text.x  = element_text(angle = 00,vjust=0.5, size=40,colour="black",face="bold"),
+       #axis.title.y = element_text(face="bold", colour="black", size=45),
+       #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("\nSimpson diversity index")+xlab("") 
+A
+```
+**Source:** Own elaboration with data from the "Area profiles for ethnicity and related census variables", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)
+   
+###FIGURE 28: Variation in housing tenure between Districts BNP (household reference persons), 2011
+
+```{r fig.width=12, fig.height=7}
+library (scales)
+library(grid)
+
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE2011_DISTRICTS_BNP.csv", stringsAsFactors=FALSE)
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+POPEDAD$District<-factor(POPEDAD$District, levels=rev(c("Epping Forest", "Kirklees", "Burnley", 
+                                                        "Stoke-on-Trent", "Sandwell", "Barking and Dagenham"))) 
+
+A<-ggplot(data=POPEDAD, aes(x=District, y=PROP, fill=District, label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_wrap(~ TENURE)+
+  scale_fill_manual(values = c("#000000","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]  
+
+###   FIGURE 28B: Variation in housing tenure between Districts BNP (household reference persons) by ethnic groups, 2011
+
+```{r fig.width=12, fig.height=20}
+POPEDAD <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/TENURE2011_DISTRICTS_BNP_GROUPS.csv", stringsAsFactors=FALSE)
+
+library (scales)
+library(grid)
+
+POPEDAD$TENURE<-factor(POPEDAD$TENURE, levels=c("Owned", "Private Rented", "Social Rented")) 
+
+POPEDAD$GROUP<-factor(POPEDAD$GROUP, levels=rev(c("Bangladeshi", "Indian", "White Irish", "Caribbean", "Chinese", 
+                                                  "Other Asian", "Pakistani", "White British", "Any other ethnic group",
+                                                  "Other Black", "African", "White Other","Mixed Other", "Arab", 
+                                                  "Mixed White and Asian", "Mixed White and Caribbean", "Mixed White and African",
+                                                  "White Gypsy or Irish Traveller"))) 
+
+A<- ggplot(data=POPEDAD, aes(x=GROUP, y=PROP, fill=TENURE, label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity",colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15, size=3.5)+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1),labels=percent)+
+  expand_limits(y=c(0,1))+
+  facet_grid(DISTRICT ~ TENURE)+
+    scale_fill_manual(values=c("#D8D8D8", "#A4A4A4", "#6E6E6E"),
+                    breaks=c("Owned", "Private Rented","Social Rented"),
+                    labels=c("Owned", "Private Rented","Social Rented"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+       #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+       #axis.text.x  = element_text(angle = 45,vjust=0.5, size=40,colour="black",face="bold"),
+       #axis.title.y = element_text(face="bold", colour="black", size=45),
+       #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]  
+
+###FIGURE 29: White British population aged 16 and over with no qualifications and degree level qualifications by ethnic group, BNP districts 2011
+
+```{r fig.width=12, fig.height=7}
+library(ggplot2)
+library(grid)
+library(scales)
+
+QUALI <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/QUALIFICATIONS_2011_WHITE_BRITISH_BNP.csv", stringsAsFactors=FALSE)
+
+QUALI$District<-factor(QUALI$District, levels=subset(QUALI, QUALI  == "No qualifications")[order(subset(QUALI,QUALI  == "No qualifications")$PROP),1])
+
+QUALI$QUALI <-factor(QUALI$QUALI, levels = c("No qualifications","Degree level qualifications"))
+
+A<-ggplot(data=QUALI, aes(x=District, y=PROP, fill=factor(District),label=round(PROP*100, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  geom_text(hjust=-0.15,size=3.5,position = position_dodge(width=1))+
+  facet_wrap(~  QUALI, ncol=2)+
+  scale_y_continuous(breaks=c(0,0.2,0.4,0.6,0.8,1), labels=percent)+
+  expand_limits(y=c(0,1))+
+  scale_fill_manual(values = c("#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#BDBDBD","#000000"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        legend.text = element_text(colour="black", size = 45),
+        legend.position="none",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(2, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 00,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("")+xlab("") 
+A
+```
+**Source:** Own elaboration with data form the Office for National Statistics, 2011 Census: Aggregate data (England and Wales) [computer file]. UK Data Service Census Support. Downloaded from: [http://infuse.mimas.ac.uk](http://infuse.mimas.ac.uk). This information is licensed under the terms of the Open Government Licence [[http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2](http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2)]  
+        
+### FIGURE 30: District inequalities in health 2011. Age-sex-standardised ratios of illness for ethnic groups, compared to each group (England and Wales)
+
+```{r fig.width=12, fig.height=10}
+
+library(ggplot2)
+library(grid)
+library(scales)
+
+ill <- read.csv("C:/Users/jgaleano/Desktop/STEPHEN/ILLNESSRATES_2011_BNP_EW.csv", stringsAsFactors=FALSE)
+      
+ill2 <- ill[!(ill$GROUP=="All people"|ill$GROUP=="Minority"|ill$DISTRICT=="England and Wales"), ]
+ill2$GROUP<-factor(ill2$GROUP, levels=subset(ill2, YEAR  == "2011")[order(subset(ill2,YEAR  == "2011")$RATIO2),1])
+ill2$YEAR <-factor(ill2$YEAR, levels = c("2011","2001"))
+
+A<-ggplot(data=ill2, aes(x=GROUP, y=RATIO2, fill=factor(YEAR),label=round(RATIO2, digits =2))) + 
+  geom_bar(stat="identity", position=position_dodge(), colour="black")+
+  coord_flip()+
+  #geom_text(hjust=-0.15,position = position_dodge(width=1))+
+  facet_wrap( ~ DISTRICT, ncol=2)+
+  scale_y_continuous(breaks=c(-0.5,-0.25,0,0.25,0.5), labels=percent)+
+  expand_limits(y=c(-0.5,0.5))+
+  scale_fill_manual(values=c("#585858","#BDBDBD"),
+                    breaks=c("2001", "2011"),
+                    labels=c("2001", "2011"))+
+  theme(plot.title = element_text(lineheight=5.6, size=20, face="bold"),
+        legend.title = element_blank(),
+        #legend.text = element_text(colour="black", size = 45),
+        legend.position="right",
+        legend.background = element_rect(fill="#FFFFFF"),
+        legend.justification=c(0,1), 
+        legend.key.size = unit(.5, "cm"),
+        axis.title.x = element_blank(),
+        #strip.text=element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.text.x  = element_text(angle = 0,vjust=0.5, size=40,colour="black",face="bold"),
+        #axis.title.y = element_text(face="bold", colour="black", size=45),
+        #axis.text.y  = element_text(vjust=0.5, size=45,colour="black",face="bold"),
+        panel.background = element_rect(fill = "#FFFFFF"),
+        panel.grid = element_line(colour="#000000"),
+        panel.grid.major=element_line(colour="#BDBDBD"),
+        panel.grid.minor=element_line(colour="white"),
+        plot.background = element_rect(fill = "#FFFFFF"))+
+  ylab("\nillnes rate")+xlab("") 
+A
+```
+**Source:** Own elaboration with data from the "Interactive Profiler for Ethnic Inequalities", Centre on Dynamics of Ethnicity, University of Manchester. [http://www.ethnicity.ac.uk/research/data-sources/area-profilers/](http://www.ethnicity.ac.uk/research/data-sources/area-profilers/)  
