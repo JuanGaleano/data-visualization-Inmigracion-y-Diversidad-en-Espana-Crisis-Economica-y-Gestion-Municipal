@@ -1,17 +1,12 @@
-#### Inmigracion y diversidad en España Crisis Económica y Gestión Municipal
+## Inmigracion y diversidad en España Crisis Económica y Gestión Municipal
 
 #### **Editorial:** [***ICARIA***](http://www.icariaeditorial.com/)    
 #### **Editor:** [***Andreu Domingo***](http://ced.uab.es/directori/andreu-domingo-valls/)    
 #### **Data visualization:** [***Juan Galeano***](http://ced.uab.es/directori/juan-galeano/)  
 
-REPOSITORY UNDER CONSTRUCTION
-#### **Editorial:** [***ICARIA***](http://www.icariaeditorial.com/libros.php?id=1613)    
-#### **Editor:** [***Andreu Domingo***](http://ced.uab.es/directori/andreu-domingo-valls/)    
-#### **Data visualization:** [***Juan Galeano***](http://ced.uab.es/directori/juan-galeano/)    
-
 ***
 
-Este documento contiene el código R utilizado para la confección de cada uno de los gráficos que se presentan en los distintos capítulos del libro. El unico cambio que se ha realizado a la hora de elaborar este documento han sido unos ligeros ajustes sobre el tamaño de las fuentes.
+Este documento contiene el código R utilizado para la elaboración de cada uno de los gráficos que se presentan en los distintos capítulos del libro. El único cambio que se ha realizado a la hora de elaborar este documento han sido unos ligeros ajustes sobre el tamaño de las fuentes.
 
 En el caso de los figuras que contienen mapas gran parte del análisis estadístico también fue realizado con R. Sin embargo, a la hora de visualizar esos resultados sobre el territorio se ha utilizado el programa QGIS. Aqui sólo aparece el mapa final, no el código de análsisi del cual emanan los resultados.  
 
